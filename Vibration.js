@@ -136,6 +136,10 @@ function VibrationCtrl($scope, $interval) {
             $scope.m = 0.01;
         }
 
+        if ($scope.k < 0.01) {
+            $scope.k = 0.01;
+        }
+
         d = new Date();
         t = (d.getTime() - $scope.StartTime)/1000;
 
