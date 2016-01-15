@@ -243,7 +243,7 @@ function VibrationCtrl($scope, $interval) {
             $scope.T = (d.getTime() - $scope.StartTime);
         } else { // Resumse
             $scope.StartTime = d.getTime() - $scope.T;
-            $scope.int = $interval($scope.doUpdate, 50);
+            $scope.int = $interval($scope.doUpdate, 5);
             $scope.run = true;
 
         }
@@ -369,7 +369,7 @@ function VibrationCtrl($scope, $interval) {
     $scope.chartD.series[2].hide();
 
     $scope.DrawFBD();
-    $scope.int = $interval($scope.doUpdate, 10);
+    $scope.int = $interval($scope.doUpdate, 5);
 }
 
 app.controller('VibrationCtrl',VibrationCtrl);
