@@ -11,6 +11,8 @@ function VibrationCtrl($scope, $interval) {
 
     $scope.u0 = 1;
     $scope.v0 = 0;
+    $scope.p0 = 0;
+    $scope.Omega = 2;
 
     $scope.wn = function () {
         return Math.sqrt($scope.k / $scope.m);
@@ -46,7 +48,18 @@ function VibrationCtrl($scope, $interval) {
         } else {
             return Math.sqrt(Math.pow($scope.u0, 2) + Math.pow(($scope.v0 + $scope.zeta() * $scope.wn() * $scope.u0) / $scope.ws(), 2));
         }
-    }
+    };
+
+    $scope.alphap = function(){
+        r = $scope.Omega/$scope.wn();
+        return Math.atan(2*$scope.zeta()*r/(1-Math.pow(r,2)));
+    };
+
+    $scope.Up = function () {
+        r = $scope.Omega/$scope.wn();
+        U0 = $scope.p0 / $scope.k;
+        return U0/ Math.pow(Math.pow(1 - Math.pow(r,2),2) + Math.pow(2*$scope.zeta()*r,2),0.5);
+    };
 
     $scope.u = function (t) {
         wn = $scope.wn();
@@ -62,7 +75,10 @@ function VibrationCtrl($scope, $interval) {
         } else {
             u = Math.pow(Math.E, -zeta * wn * t) * (u0 * Math.cosh(ws * t) + (v0 + zeta * wn * u0) / ws * Math.sinh(ws * t));
         }
-        return u;
+
+        up = $scope.Up()* Math.cos($scope.Omega*t - $scope.alphap());
+
+        return (u + up);
     };
 
     $scope.v = function (t) {
@@ -84,7 +100,8 @@ function VibrationCtrl($scope, $interval) {
             A2 = (v0+zeta*wn*u0)/ws;
             v = Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*(A1 * Math.cosh(ws*t) + A2 * Math.sinh(ws*t)) + ws*(A1*Math.sinh(ws*t) + A2*Math.cosh(ws*t) ));
         }
-        return v;
+        vp = - $scope.Omega* $scope.Up()* Math.sin($scope.Omega*t - $scope.alphap());
+        return (v+vp);
     };
 
     $scope.a = function (t) {
@@ -108,7 +125,9 @@ function VibrationCtrl($scope, $interval) {
             v = Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*(A1 * Math.cosh(ws*t) + A2 * Math.sinh(ws*t)) + ws*(A1*Math.sinh(ws*t) + A2*Math.cosh(ws*t) ));
             a = -zeta*wn*v +  Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*ws*(A1 * Math.sinh(ws*t) + A2* Math.cosh(ws*t)) + Math.pow(ws,2)* (A1*Math.cosh(ws*t) + A2*Math.sinh(ws*t) )  );
         }
-        return a;
+
+        ap = - Math.pow($scope.Omega,2)* $scope.Up()* Math.cos($scope.Omega*t - $scope.alphap());
+        return (a+ap);
     };
 
 
@@ -129,7 +148,6 @@ function VibrationCtrl($scope, $interval) {
         u = $scope.u(t);
         v = $scope.v(t);
         a = $scope.a(t);
-        U = $scope.U();
 
         $scope.chartD.series[0].addPoint([t, u], false, shift);
         $scope.chartD.series[1].addPoint([t, v], false, shift);
@@ -138,7 +156,7 @@ function VibrationCtrl($scope, $interval) {
         $scope.chartD.xAxis[0].update({max: t});
         $scope.chartD.redraw();
 
-        $scope.UpdateFBD(u,U);
+        $scope.UpdateFBD(u,$scope.U() + Math.abs($scope.Up()));
     };
 
     $scope.Restart = function(){
@@ -153,8 +171,8 @@ function VibrationCtrl($scope, $interval) {
     };
 
     $scope.ResetYAxis = function(){
-        $scope.chartD.yAxis[0].update({min: -$scope.U()*1.1});
-        $scope.chartD.yAxis[0].update({max: $scope.U()*1.1});
+        $scope.chartD.yAxis[0].update({min: -($scope.U() + Math.abs($scope.Up()))*1.1});
+        $scope.chartD.yAxis[0].update({max: ($scope.U()+ Math.abs($scope.Up()))*1.1});
     };
 
     $scope.chartD =new Highcharts.Chart({
@@ -251,7 +269,7 @@ function VibrationCtrl($scope, $interval) {
         //Damper
         var Damper = new paper.Path();
         Damper.strokeColor = '#FF0000';
-
+        Damper.strokeWidth = 3;
         Damper.add(new paper.Point(50, 125));
         Damper.add(new paper.Point(75, 125));
         Damper.add(new paper.Point(75, 115));
@@ -263,7 +281,7 @@ function VibrationCtrl($scope, $interval) {
         //Cart
         var rectangle = new paper.Rectangle(new paper.Point(350, 50), new paper.Point(450, 150));
         var Cart = new paper.Path.Rectangle(rectangle);
-        Cart.fillColor = '#0000FF';
+        Cart.fillColor = '#000000';
 
         //Wheels
         var Wheel1 = new paper.Path.Circle(new paper.Point(375, 162.5), 12.5);
@@ -274,6 +292,7 @@ function VibrationCtrl($scope, $interval) {
         //Cart Damper
         var DamperRod = new paper.Path();
         DamperRod.strokeColor = '#FF0000';
+        DamperRod.strokeWidth = 3;
         DamperRod.add(new paper.Point(350, 125));
         DamperRod.add(new paper.Point(200, 125));
         DamperRod.add(new paper.Point(200, 135));
@@ -287,6 +306,7 @@ function VibrationCtrl($scope, $interval) {
         var ds = 200 / 8;
         Spring = new paper.Path();
         Spring.strokeColor = '#00FF00';
+        Spring.strokeWidth = 3;
         Spring.add(new paper.Point(50, 75));
         Spring.add(new paper.Point(100, 75));
 
@@ -302,17 +322,38 @@ function VibrationCtrl($scope, $interval) {
         Spring.add(new paper.Point(350, 75));
 
         Spring.scale(1, 1, new paper.Point(50, 75))
+
+        //Arrow
+        Arrow = new paper.Path();
+        Arrow.strokeColor = '#0000FF';
+        Arrow.strokeWidth = 5;
+        Arrow.add(new paper.Point(450, 100));
+        Arrow.add(new paper.Point(500, 100));
+        Arrow.add(new paper.Point(490, 110));
+        Arrow.add(new paper.Point(500, 100));
+        Arrow.add(new paper.Point(490, 90));
+
+        ArrowText = new paper.PointText(new paper.Point(510,110));
+        ArrowText.justfication = 'left';
+        ArrowText.fillColor = '#0000FF';
+        ArrowText.content = 'P(t)';
+        ArrowText.strokeWidth = 3;
+        ArrowText.fontSize = 30;
+
+        ArrowGroup = new paper.Group([Arrow, ArrowText]);
     };
 
     $scope.UpdateFBD = function(u,U) {
 
-        CartGroup.position = new paper.Point(Math.round(400 + 100*u/U - 75), 112.5);
+        CartGroup.position = new paper.Point(400 + 100*u/U - 75, 112.5);
         //Spring.scale(0.7,1, new paper.Point(50,75))
 
         //Spring
         SpringLength = Spring.segments[Spring.segments.length-1].point.x - Spring.segments[0].point.x;
         NewLength = 300 + 100*u/U;
         Spring.scale(NewLength/SpringLength,(2-NewLength/SpringLength),new paper.Point(50,75));
+
+        ArrowGroup.position.x  = 504.16+ 100*u/U;
 
         paper.view.draw();
     };

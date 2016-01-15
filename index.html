@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Free Vibration</title>
+    <title>SDOF Vibration</title>
 
     <!-- 1. Add these JavaScript inclusions in the head of your page -->
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
@@ -25,9 +25,9 @@
 
 <body ng-app="app" ng-controller="VibrationCtrl">
     <div class="container">
-        <div><h1> SDOF Free Vibration</h1></div>
+        <div><h1> SDOF Vibration</h1></div>
         <div id="container">
-            <canvas id="myCanvas" resize  keepalive="true"></canvas>
+            <canvas id="myCanvas" keepalive="true"></canvas>
         </div>
 
         <div class="row">
@@ -84,6 +84,22 @@
                             <slider ng-model="v0" ng-change="ResetYAxis()" min="0.0" step="0.1" max="10" value="v0" style="display: inline; float: right; width:175px; vertical-align: middle;"></slider>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">\(p_0\)</div>
+                            <input type="text" ng-model="p0" ng-change="ResetYAxis()" class="form-control" style="width:60px;">
+                            <slider ng-model="p0" ng-change="ResetYAxis()" min="0" step="0.1" max="10" value="p0" style="display: inline; float: right; width:175px; vertical-align: middle;"></slider>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">\(\Omega\)</div>
+                            <input type="text" ng-model="Omega" ng-change="ResetYAxis()" class="form-control" style="width:60px;">
+                            <slider ng-model="Omega" ng-change="ResetYAxis()" min="0.1" step="0.1" max="10" value="Omega" style="display: inline; float: right; width:175px; vertical-align: middle;"></slider>
+                        </div>
+                    </div>
                 </form>
                     <button ng-click="Run()" class="btn btn-warning">Pause <span class="glyphicon glyphicon-pause"></span></button>
                    <button class="btn btn-success" ng-click="Restart()">Restart  <span class="glyphicon glyphicon-ok"></span></button>
@@ -99,6 +115,8 @@
                     <tr><th>\(\zeta\)</th><td>{{zeta() | number: 2}}</td></tr>
                     <tr><th>\(w_d\)</th><td>{{wd() | number: 2}} Rad/s</td></tr>
                 </table>
+
+                <h3 style="color:#0000ff;">$$P(t) = P_0 cos(\Omega t - \alpha)$$<h3>
             </div>
         </div>
 
