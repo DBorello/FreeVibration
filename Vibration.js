@@ -43,11 +43,7 @@ function VibrationCtrl($scope, $interval) {
     };
 
     $scope.U = function() {
-        if ($scope.zeta() < 1) {
-            return Math.sqrt(Math.pow($scope.u0, 2) + Math.pow(($scope.v0 + $scope.zeta() * $scope.wn() * $scope.u0) / $scope.wd(), 2));
-        } else {
-            return Math.sqrt(Math.pow($scope.u0, 2) + Math.pow(($scope.v0 + $scope.zeta() * $scope.wn() * $scope.u0) / $scope.ws(), 2));
-        }
+        return Math.sqrt(Math.pow($scope.A1(), 2) + Math.pow($scope.A2(), 2));
     };
 
     $scope.alphap = function(){
@@ -61,22 +57,30 @@ function VibrationCtrl($scope, $interval) {
         return U0/ Math.pow(Math.pow(1 - Math.pow(r,2),2) + Math.pow(2*$scope.zeta()*r,2),0.5);
     };
 
+    $scope.A1 = function() {
+        return $scope.u0 - $scope.Up();
+    };
+
+    $scope.A2 = function() {
+        if ($scope.zeta() < 1) {
+            return (($scope.v0 + $scope.zeta() * $scope.wn() * $scope.A1()) / $scope.wd());
+        } else {
+            return (($scope.v0 + $scope.zeta() * $scope.wn() * $scope.A1()) / $scope.ws());
+        }
+    };
+
     $scope.u = function (t) {
         wn = $scope.wn();
         wd = $scope.wd();
-
-        u0 = $scope.u0;
-        v0 = $scope.v0;
-        zeta = $scope.zeta();
         ws = $scope.ws();
+        zeta = $scope.zeta();
+
+        A1 = $scope.A1();
+        A2 = $scope.A2();
 
         if ($scope.zeta() < 1) {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/wd;
             u = Math.pow(Math.E, -zeta * wn * t) * (A1 * Math.cos(wd * t) + A2 * Math.sin(wd * t));
         } else {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/ws;
             u = Math.pow(Math.E, -zeta * wn * t) * (A1 * Math.cosh(ws * t) + A2 * Math.sinh(ws * t));
         }
 
@@ -88,20 +92,15 @@ function VibrationCtrl($scope, $interval) {
     $scope.v = function (t) {
         wn = $scope.wn();
         wd = $scope.wd();
-        u0 = $scope.u0;
-        v0 = $scope.v0;
-        zeta = $scope.zeta();
         ws = $scope.ws();
+        zeta = $scope.zeta();
 
-
+        A1 = $scope.A1();
+        A2 = $scope.A2();
 
         if ($scope.zeta() < 1) {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/wd;
             v =  -zeta * wn * Math.pow(Math.E, -zeta * wn * t) * (A1 * Math.cos(wd * t) + A2 * Math.sin(wd * t)) + Math.pow(Math.E, -zeta * wn * t) * (-A1 * wd * Math.sin(wd * t) + A2 * wd * Math.cos(wd * t));
         } else {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/ws;
             v = Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*(A1 * Math.cosh(ws*t) + A2 * Math.sinh(ws*t)) + ws*(A1*Math.sinh(ws*t) + A2*Math.cosh(ws*t) ));
         }
         vp = - $scope.Omega* $scope.Up()* Math.sin($scope.Omega*t - $scope.alphap());
@@ -111,21 +110,15 @@ function VibrationCtrl($scope, $interval) {
     $scope.a = function (t) {
         wn = $scope.wn();
         wd = $scope.wd();
-        u0 = $scope.u0;
-        v0 = $scope.v0;
-        zeta = $scope.zeta();
         ws = $scope.ws();
+        zeta = $scope.zeta();
 
-        A1 = u0;
-        A2 = (v0+zeta*wn*u0)/wd;
+        A1 = $scope.A1();
+        A2 = $scope.A2();
 
         if ($scope.zeta() < 1) {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/wd;
             a = Math.pow(Math.E, -zeta * wn * t) * (Math.pow(zeta, 2) * Math.pow(wd, 2) * (A1 * Math.cos(wd * t) + A2 * Math.sin(wd * t)) - 2 * zeta * wn * (-A1 * wd * Math.sin(wd * t) + A2 * wd * Math.cos(wd * t)) - A1 * Math.pow(wd, 2) * Math.cos(wd * t) - A2 * Math.pow(wd, 2) * Math.sin(wd * t));
         } else {
-            A1 = u0;
-            A2 = (v0+zeta*wn*u0)/ws;
             v = Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*(A1 * Math.cosh(ws*t) + A2 * Math.sinh(ws*t)) + ws*(A1*Math.sinh(ws*t) + A2*Math.cosh(ws*t) ));
             a = -zeta*wn*v +  Math.pow(Math.E, -zeta * wn * t) * ( -zeta*wn*ws*(A1 * Math.sinh(ws*t) + A2* Math.cosh(ws*t)) + Math.pow(ws,2)* (A1*Math.cosh(ws*t) + A2*Math.sinh(ws*t) )  );
         }
