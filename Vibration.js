@@ -127,6 +127,10 @@ function VibrationCtrl($scope, $interval) {
         return (a+ap);
     };
 
+    $scope.P = function(t) {
+        P = $scope.p0*Math.cos($scope.Omega * t);
+        return P;
+    };
 
     $scope.doUpdate = function() {
         if ($scope.m < 0.01) {
@@ -149,10 +153,12 @@ function VibrationCtrl($scope, $interval) {
         u = $scope.u(t);
         v = $scope.v(t);
         a = $scope.a(t);
+        P = $scope.P(t);
 
         $scope.chartD.series[0].addPoint([t, u], false, shift);
         $scope.chartD.series[1].addPoint([t, v], false, shift);
         $scope.chartD.series[2].addPoint([t, a], false, shift);
+        $scope.chartD.series[3].addPoint([t, P], false, shift);
         $scope.chartD.xAxis[0].update({min: t-10});
         $scope.chartD.xAxis[0].update({max: t});
         $scope.chartD.redraw();
@@ -167,6 +173,7 @@ function VibrationCtrl($scope, $interval) {
         $scope.chartD.series[0].setData([]);
         $scope.chartD.series[1].setData([]);
         $scope.chartD.series[2].setData([]);
+        $scope.chartD.series[3].setData([]);
 
         $scope.ResetYAxis();
     };
@@ -174,6 +181,9 @@ function VibrationCtrl($scope, $interval) {
     $scope.ResetYAxis = function(){
         $scope.chartD.yAxis[0].update({min: -($scope.U() + Math.abs($scope.Up()))*1.1});
         $scope.chartD.yAxis[0].update({max: ($scope.U()+ Math.abs($scope.Up()))*1.1});
+        $scope.chartD.yAxis[1].update({min: -$scope.p0*1.1});
+        $scope.chartD.yAxis[1].update({max: $scope.p0*1.1});
+
     };
 
     $scope.chartD =new Highcharts.Chart({
@@ -190,7 +200,7 @@ function VibrationCtrl($scope, $interval) {
             tickPixelInterval: 150,
             minRange: 10
         },
-        yAxis: {
+        yAxis: [{
             minPadding: 0.2,
             maxPadding: 0.2,
             min: -$scope.U()*1.1,
@@ -199,14 +209,25 @@ function VibrationCtrl($scope, $interval) {
                 text: '',
                 margin: 80
             }
-        },
+        },{
+            minPadding: 0.2,
+            maxPadding: 0.2,
+            min: -$scope.U()*1.1,
+            max: $scope.U()*1.1,
+            title: {
+                text: 'Excitation P(t)',
+                margin: 8
+            },
+            opposite: true
+        }
+        ],
         series: [{
             name: 'Displacement',
             animation: false,
             marker: {
                 enabled: false
             },
-            color: '#0000FF',
+            color: '#000000',
             data: []
         },
             {
@@ -225,6 +246,16 @@ function VibrationCtrl($scope, $interval) {
                     enabled: false
                 },
                 color: '#00FF00',
+                data: []
+            },
+            {
+                name: 'Excitation',
+                animation: false,
+                yAxis: 1,
+                marker: {
+                    enabled: false
+                },
+                color: '#0000FF',
                 data: []
             }
         ],
