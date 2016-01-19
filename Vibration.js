@@ -372,8 +372,11 @@ function VibrationCtrl($scope, $interval) {
     $scope.chartD.series[1].hide();
     $scope.chartD.series[2].hide();
 
-    $scope.DrawFBD();
-    $scope.int = $interval($scope.doUpdate, 5);
+    angular.element(document).ready( function() {
+        $scope.DrawFBD();
+        $scope.int = $interval($scope.doUpdate, 5);
+    });
+
 }
 
 app.controller('VibrationCtrl',VibrationCtrl);
