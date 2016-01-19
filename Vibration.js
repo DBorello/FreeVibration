@@ -71,9 +71,13 @@ function VibrationCtrl($scope, $interval) {
         ws = $scope.ws();
 
         if ($scope.zeta() < 1) {
-            u = Math.pow(Math.E, -zeta * wn * t) * (u0 * Math.cos(wd * t) + (v0 + zeta * wn * u0) / wd * Math.sin(wd * t));
+            A1 = u0;
+            A2 = (v0+zeta*wn*u0)/wd;
+            u = Math.pow(Math.E, -zeta * wn * t) * (A1 * Math.cos(wd * t) + A2 * Math.sin(wd * t));
         } else {
-            u = Math.pow(Math.E, -zeta * wn * t) * (u0 * Math.cosh(ws * t) + (v0 + zeta * wn * u0) / ws * Math.sinh(ws * t));
+            A1 = u0;
+            A2 = (v0+zeta*wn*u0)/ws;
+            u = Math.pow(Math.E, -zeta * wn * t) * (A1 * Math.cosh(ws * t) + A2 * Math.sinh(ws * t));
         }
 
         up = $scope.Up()* Math.cos($scope.Omega*t - $scope.alphap());
@@ -191,7 +195,7 @@ function VibrationCtrl($scope, $interval) {
         xAxis: {
             type: 'linear',
             tickPixelInterval: 150,
-            minRange: 10,
+            minRange: 10
         },
         yAxis: {
             minPadding: 0.2,
@@ -266,7 +270,7 @@ function VibrationCtrl($scope, $interval) {
         //Frame
         var Frame = new paper.Path();
         Frame.strokeColor = 'black';
-        Frame.add(new paper.Point(50, 00));
+        Frame.add(new paper.Point(50, 0));
         Frame.add(new paper.Point(50, 175));
         Frame.add(new paper.Point(750, 175));
 
@@ -325,7 +329,7 @@ function VibrationCtrl($scope, $interval) {
         Spring.add(new paper.Point(300, 75));
         Spring.add(new paper.Point(350, 75));
 
-        Spring.scale(1, 1, new paper.Point(50, 75))
+        Spring.scale(1, 1, new paper.Point(50, 75));
 
         //Arrow
         Arrow = new paper.Path();
@@ -366,8 +370,8 @@ function VibrationCtrl($scope, $interval) {
     $scope.SliderOptions = {
         min: 0.01,
         max: 10,
-        step: 0.1,
-    }
+        step: 0.1
+    };
 
     $scope.chartD.series[1].hide();
     $scope.chartD.series[2].hide();
