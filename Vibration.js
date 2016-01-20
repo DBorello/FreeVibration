@@ -380,6 +380,9 @@ function VibrationCtrl($scope, $interval) {
     };
 
     $scope.UpdateFBD = function(u,U) {
+        if (Math.abs(U) < 0.01) {
+            U = 0.01;
+        }
         XX = 100*u/U;
         XX = Math.min(XX, 100);
         XX = Math.max(XX, -100);
