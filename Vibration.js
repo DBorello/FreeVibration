@@ -12,7 +12,7 @@ function VibrationCtrl($scope, $interval) {
     $scope.u0 = 1;
     $scope.v0 = 0;
     $scope.p0 = 0;
-    $scope.Omega = 2;
+    $scope.Omega = 0.5;
 
     $scope.wn = function () {
         return Math.sqrt($scope.k / $scope.m);
@@ -376,16 +376,19 @@ function VibrationCtrl($scope, $interval) {
     };
 
     $scope.UpdateFBD = function(u,U) {
+        XX = 100*u/U;
+        XX = Math.min(XX, 100);
+        XX = Math.max(XX, -100);
 
-        CartGroup.position = new paper.Point(400 + 100*u/U - 75, 112.5);
+        CartGroup.position = new paper.Point(400 + XX - 75, 112.5);
         //Spring.scale(0.7,1, new paper.Point(50,75))
 
         //Spring
         SpringLength = Spring.segments[Spring.segments.length-1].point.x - Spring.segments[0].point.x;
-        NewLength = 300 + 100*u/U;
+        NewLength = 300 + XX;
         Spring.scale(NewLength/SpringLength,(2-NewLength/SpringLength),new paper.Point(50,75));
 
-        ArrowGroup.position.x  = 504.16+ 100*u/U;
+        ArrowGroup.position.x  = 504.16+ XX;
 
         paper.view.draw();
     };
