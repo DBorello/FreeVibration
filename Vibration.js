@@ -176,6 +176,8 @@ function VibrationCtrl($scope, $interval) {
         $scope.chartD.series[3].setData([]);
 
         $scope.ResetYAxis();
+
+        $scope.DrawFBD();
     };
 
     $scope.ResetYAxis = function(){
@@ -284,7 +286,9 @@ function VibrationCtrl($scope, $interval) {
 
     $scope.DrawFBD = function() {
         var canvas = document.getElementById('myCanvas');
+
         paper.setup(canvas);
+        paper.project.clear();
 
         var from = new paper.Point(400, 0);
         var to = new paper.Point(400, 200);
